@@ -1,0 +1,158 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    background: #f5f1e8;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.left-panel {
+    flex: 1;
+    background: linear-gradient(135deg, #1f4d3a, #2f6b52);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.brand-box {
+    max-width: 420px;
+}
+
+.brand-box h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.brand-box p {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: #e7efe9;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: #f8f5ee;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 40px 32px;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+.login-card h2 {
+    font-size: 2rem;
+    color: #1f4d3a;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #1f4d3a;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 15px;
+    border: 1px solid #d4d4d4;
+    border-radius: 10px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.input-group input:focus {
+    border-color: #2f6b52;
+    box-shadow: 0 0 0 3px rgba(47, 107, 82, 0.15);
+}
+
+.login-btn {
+    width: 100%;
+    padding: 14px;
+    background: #1f4d3a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s ease;
+}
+
+.login-btn:hover {
+    background: #17392b;
+}
+
+.footer-text {
+    margin-top: 22px;
+    text-align: center;
+    color: #888;
+    font-size: 0.95rem;
+}
+
+.message {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+}
+
+.message.error {
+    background: #fdecec;
+    color: #b42318;
+    border: 1px solid #f5c2c2;
+}
+
+.message.success {
+    background: #ecfdf3;
+    color: #027a48;
+    border: 1px solid #b7ebc6;
+}
+
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .left-panel,
+    .right-panel {
+        flex: none;
+        width: 100%;
+        min-height: 50vh;
+    }
+
+    .brand-box h1 {
+        font-size: 2.3rem;
+    }
+}
