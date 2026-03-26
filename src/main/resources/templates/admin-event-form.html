@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Event | Universal Buzz</title>
+    <link rel="stylesheet" th:href="@{/css/events.css}">
+</head>
+<body>
+    <div class="page form-page">
+        <div class="form-card">
+            <h1>Add Event</h1>
+            <p>Create a new campus event for students to view.</p>
+
+            <form th:action="@{/admin/events}" method="post" th:object="${event}">
+                <label>Title</label>
+                <input type="text" th:field="*{title}" placeholder="Enter event title" required>
+
+                <label>Date</label>
+                <input type="text" th:field="*{date}" placeholder="April 10, 2026" required>
+
+                <label>Location</label>
+                <input type="text" th:field="*{location}" placeholder="Student Union" required>
+
+                <label>Description</label>
+                <textarea th:field="*{description}" rows="5" placeholder="Write a short event description" required></textarea>
+
+                <div class="form-actions">
+                    <a href="/admin/events" class="secondary-btn">Cancel</a>
+                    <button type="submit" class="primary-btn">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

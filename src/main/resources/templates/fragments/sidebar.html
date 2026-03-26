@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="sidebar(activePage)">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-top">
+                <div class="brand-row">
+                    <h2 class="brand-text">Universal Buzz</h2>
+                    <button class="toggle-btn" id="sidebarToggle" type="button">☰</button>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a th:href="@{/dashboard}">
+                    <i data-lucide="home"></i>
+                    <span class="nav-text">Home</span>
+                </a>
+
+                <a th:href="@{/events}">
+                    <i data-lucide="calendar"></i>
+                    <span class="nav-text">Events</span>
+                </a>
+
+                <a th:href="@{/admin/events}">
+                    <i data-lucide="settings"></i>
+                    <span class="nav-text">Manage Events</span>
+                </a>
+
+                <a href="#">
+                    <i data-lucide="book-open"></i>
+                    <span class="nav-text">Resources</span>
+                </a>
+
+                <a href="#">
+                    <i data-lucide="user"></i>
+                    <span class="nav-text">Profile</span>
+                </a>
+
+                
+            </nav>
+
+            <form th:action="@{/logout}" method="post" class="logout-form">
+                <button class="logout-btn">
+                    <i data-lucide="log-out"></i>
+                    <span class="nav-text">Logout</span>
+                </button>
+            </form>
+        </aside>
+    </div>
+
+</body>
+</html>

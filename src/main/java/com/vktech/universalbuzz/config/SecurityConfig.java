@@ -12,17 +12,19 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/images/**").permitAll()
+                .requestMatchers("/", "/signup", "/css/**", "/js/**", "/images/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/login")
+                .loginPage("/")
+                .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/dashboard", true)
+                .failureUrl("/?error")
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/?logout")
                 .permitAll()
             );
 

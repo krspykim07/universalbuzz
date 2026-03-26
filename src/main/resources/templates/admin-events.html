@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Events | Universal Buzz</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/events.css}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <div th:replace="fragments/sidebar :: sidebar('admin-events')"></div>
+
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <h1>Manage Events</h1>
+                    <p>Add and review event postings.</p>
+                </div>
+            </header>
+
+            <section class="events-grid">
+                <div class="event-card" th:each="event : ${events}">
+                    <h2 th:text="${event.title}">Event Title</h2>
+                    <p class="meta">
+                        <span th:text="${event.date}">Date</span> •
+                        <span th:text="${event.location}">Location</span>
+                    </p>
+                    <p class="description" th:text="${event.description}">Description</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script th:src="@{/js/sidebar.js}"></script>
+</body>
+</html>

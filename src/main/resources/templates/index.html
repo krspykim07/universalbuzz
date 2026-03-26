@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Buzz Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,800;1,800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+
+    <div id="toastContainer">
+        <div id="toastMessage" class="toast"></div>
+    </div>
+
+    <!-- Globe canvas — positioned bottom-right, bleeds off edge -->
+    <canvas id="globeCanvas" width="1400" height="1400"></canvas>
+
+    <div class="page-shell" id="pageShell">
+
+        <section class="hero-section active-panel" id="heroSection">
+            <!-- hero content -->
+            <div class="hero-content">
+                <div class="hero-tag">SACRAMENTO STATE • INTERNATIONAL STUDENT HUB</div>
+
+                <h1 class="hero-title">
+                    Universal <span class="accent">Buzz</span>
+                </h1>
+
+                <p>
+                    Sacramento State campus events, student resources, and international community updates — all in one place.
+                </p>
+                <p class="location">📍 Sacramento, California</p>
+
+                <button class="explore-btn" id="showAuthBtn">Explore Now</button>
+            </div>
+        </section>
+
+        <section class="auth-section" id="authSection">
+            <button class="back-btn" id="backToHeroBtn">← Back</button>
+
+            <div class="auth-container" id="authContainer">
+
+                <div class="form-panel login-panel">
+                    <form class="auth-form" th:action="@{/login}" method="post">
+                        <h1>Login</h1>
+                        <p class="subtitle">Welcome back to Sacramento State International Hub</p>
+
+                        <div th:if="${param.error}" class="message error">
+                            Invalid username or password.
+                        </div>
+
+                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="password" name="password" placeholder="Password" required>
+
+                        <button type="submit" class="btn primary-btn">Login</button>
+                    </form>
+                </div>
+
+                <div class="form-panel signup-panel">
+                    <form class="auth-form" th:action="@{/signup}" method="post">
+                        <h1>Create Account</h1>
+                        <p class="subtitle">Join the Sacramento State international student community</p>
+
+                        <div th:if="${param.signupSuccess}" class="message success">
+                            Signup UI works! Next step is saving users to the database.
+                        </div>
+
+                        <input type="text" name="fullName" placeholder="Full Name" required>
+                        <input type="text" name="username" placeholder="Username" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="password" name="password" placeholder="Password" required>
+
+                        <button type="submit" class="btn primary-btn">Sign Up</button>
+                    </form>
+                </div>
+
+                <div class="overlay-panel">
+                    <div class="overlay-track">
+                        <div class="overlay-side overlay-left-side">
+                            <div class="overlay-content">
+                                <h2>Welcome Back!</h2>
+                                <p>
+                                    Login to explore Sacramento State events, campus updates, resources, and international student support.
+                                </p>
+                                <button type="button" class="btn ghost-btn" id="showLogin">Already have an account?</button>
+                            </div>
+                        </div>
+
+                        <div class="overlay-side overlay-right-side">
+                            <div class="overlay-content">
+                                <h2>Hello, Student!</h2>
+                                <p>
+                                    Create an account to stay connected with Sacramento State events, resources, and student life.
+                                </p>
+                                <button type="button" class="btn ghost-btn" id="showSignup">Create Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+
+    <!-- ───────────────────────── GLOBE SCRIPT ───────────────────────── -->
+    <script>
+    (function () {
+        const canvas = document.getElementById('globeCanvas');
+        const ctx    = canvas.getContext('2d');
+        const W = 1400, H = 1400, CX = W / 2, CY = H / 2, R = 580;
+
+        const N      = 280;
+        const pts    = [];
+        const GOLDEN = Math.PI * (3 - Math.sqrt(5));
+        for (let i = 0; i < N; i++) {
+            const y     = 1 - (i / (N - 1)) * 2;
+            const r     = Math.sqrt(1 - y * y);
+            const theta = GOLDEN * i;
+            pts.push({ x0: r * Math.cos(theta), y0: y, z0: r * Math.sin(theta) });
+        }
+
+        const edges = [];
+        for (let i = 0; i < N; i++) {
+            for (let j = i + 1; j < N; j++) {
+                const dx = pts[i].x0 - pts[j].x0;
+                const dy = pts[i].y0 - pts[j].y0;
+                const dz = pts[i].z0 - pts[j].z0;
+                if (Math.sqrt(dx*dx + dy*dy + dz*dz) < 0.48) edges.push([i, j]);
+            }
+        }
+
+        const travellers = [];
+        for (let i = 0; i < 10; i++) {
+            travellers.push({
+                edge:  edges[Math.floor(Math.random() * edges.length)],
+                t:     Math.random(),
+                speed: 0.003 + Math.random() * 0.004
+            });
+        }
+
+        let   angle  = 0;
+        const TILT_X = 0.28;
+
+        function project(x, y, z) {
+            const cosA = Math.cos(angle), sinA = Math.sin(angle);
+            const rx =  x * cosA + z * sinA;
+            const ry =  y;
+            const rz = -x * sinA + z * cosA;
+            const cosT = Math.cos(TILT_X), sinT = Math.sin(TILT_X);
+            const fy =  ry * cosT - rz * sinT;
+            const fz =  ry * sinT + rz * cosT;
+            const fov = 3.2;
+            const sc  = fov / (fov + fz + 1);
+            return { sx: CX + rx * R * sc, sy: CY + fy * R * sc, z: fz, scale: sc };
+        }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+            const proj = pts.map(p => project(p.x0, p.y0, p.z0));
+
+            for (const [i, j] of edges) {
+                const a = proj[i], b = proj[j];
+                const avgZ = (a.z + b.z) / 2;
+                const alpha = Math.max(0, (avgZ + 0.55) * 0.5);
+                if (alpha < 0.03) continue;
+                ctx.beginPath();
+                ctx.moveTo(a.sx, a.sy);
+                ctx.lineTo(b.sx, b.sy);
+                ctx.strokeStyle = `rgba(78,203,113,${alpha * 0.4})`;
+                ctx.lineWidth   = 0.9;
+                ctx.stroke();
+            }
+
+            for (let i = 0; i < N; i++) {
+                const p     = proj[i];
+                const alpha = Math.max(0, (p.z + 0.55) * 0.95);
+                if (alpha < 0.04) continue;
+                const t = (p.z + 1) / 2;
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, p.scale * 4.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${Math.round(lerp(20,78,t))},${Math.round(lerp(80,210,t))},${Math.round(lerp(40,113,t))},${alpha})`;
+                ctx.fill();
+            }
+
+            for (const tv of travellers) {
+                const [ei, ej] = tv.edge;
+                const a  = proj[ei], b = proj[ej];
+                const tx = lerp(a.sx, b.sx, tv.t);
+                const ty = lerp(a.sy, b.sy, tv.t);
+                const tz = lerp(a.z,  b.z,  tv.t);
+                const sc = lerp(a.scale, b.scale, tv.t);
+                const alpha = Math.max(0, (tz + 0.55) * 1.1);
+
+                const grad = ctx.createRadialGradient(tx, ty, 0, tx, ty, sc * 18);
+                grad.addColorStop(0, `rgba(212,175,55,${alpha * 0.35})`);
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.beginPath();
+                ctx.arc(tx, ty, sc * 18, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(tx, ty, sc * 5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(244,215,80,${alpha * 0.98})`;
+                ctx.fill();
+
+                tv.t += tv.speed;
+                if (tv.t > 1) {
+                    tv.t    = 0;
+                    tv.edge = edges[Math.floor(Math.random() * edges.length)];
+                }
+            }
+
+            angle += 0.0035;
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    })();
+    </script>
+
+    <div id="logoutFlag" th:if="${param.logout}" style="display:none;"></div>
+    <div id="errorFlag" th:if="${param.error}" style="display:none;"></div>
+
+    <script>
+        const pageShell = document.getElementById('pageShell');
+        const showAuthBtn = document.getElementById('showAuthBtn');
+        const backToHeroBtn = document.getElementById('backToHeroBtn');
+
+        const authContainer = document.getElementById('authContainer');
+        const showSignup = document.getElementById('showSignup');
+        const showLogin = document.getElementById('showLogin');
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toastMessage");
+
+            toast.textContent = message;
+            toast.className = "toast show " + type;
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        showAuthBtn.addEventListener('click', () => {
+            pageShell.classList.add('show-auth');
+        });
+
+        backToHeroBtn.addEventListener('click', () => {
+            pageShell.classList.remove('show-auth');
+        });
+
+        showSignup.addEventListener('click', () => {
+            authContainer.classList.add('right-panel-active');
+        });
+
+        showLogin.addEventListener('click', () => {
+            authContainer.classList.remove('right-panel-active');
+        });
+
+        window.addEventListener("load", () => {
+            const logoutFlag = document.getElementById("logoutFlag");
+            const errorFlag = document.getElementById("errorFlag");
+
+            if (errorFlag) {
+                pageShell.classList.add("show-auth");
+                authContainer.classList.remove("right-panel-active");
+                showToast("Invalid username or password.", "error");
+            }
+
+            if (logoutFlag) {
+                showToast("You have been logged out.", "success");
+            }
+
+            if (window.location.search) {
+                window.history.replaceState({}, document.title, "/");
+            }
+        });
+    </script>
+
+
+    <script>
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toastMessage");
+
+            toast.textContent = message;
+            toast.className = "toast show " + type;
+
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+    </script>
+
+    <script>
+        window.addEventListener("load", () => {
+            if (document.getElementById("logoutFlag")) {
+                showToast("You have been logged out.", "success");
+            }
+
+            if (document.getElementById("errorFlag")) {
+                showToast("Invalid username or password.", "error");
+            }
+
+            // ✅ CLEAN URL (remove ?logout or ?error)
+            if (window.location.search) {
+                window.history.replaceState({}, document.title, "/");
+            }
+        });
+    </script>
+
+</body>
+</html>
