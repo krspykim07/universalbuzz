@@ -25,10 +25,17 @@
                 <div class="event-card" th:each="event : ${events}">
                     <h2 th:text="${event.title}">Event Title</h2>
                     <p class="meta">
-                        <span th:text="${event.date}">Date</span> •
+                        <span th:text="${#temporals.format(event.eventDate, 'MMM d, yyyy')}">Date</span>
+                        <span th:if="${event.eventTime != null and !#strings.isEmpty(event.eventTime)}">
+                            • <span th:text="${event.eventTime}">Time</span>
+                        </span>
+                        •
                         <span th:text="${event.location}">Location</span>
                     </p>
-                    <p class="description" th:text="${event.description}">Description</p>
+                    <div class="description-wrap">
+                        <p class="description" th:text="${event.description}">Description</p>
+                        <div class="description-popup" th:text="${event.description}">Full description</div>
+                    </div>
                 </div>
             </section>
         </main>

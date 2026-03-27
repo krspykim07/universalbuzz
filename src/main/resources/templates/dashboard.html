@@ -22,12 +22,6 @@
 
             <section class="cards">
                 <div class="card">
-                    <h3>Upcoming Events</h3>
-                    <p>View campus events and student activities.</p>
-                    <button><a href="/events">View Events</a></button>
-                </div>
-
-                <div class="card">
                     <h3>Resources</h3>
                     <p>Access school resources and support services.</p>
                     <button>View Resources</button>
@@ -41,22 +35,21 @@
             </section>
 
             <section class="recent-section">
-                <h2>Recent Updates</h2>
+                <div class="section-header">
+                    <h2>Upcoming Events</h2>
+                    <a href="/events" class="view-all-btn">View All Events</a>
+                </div>
 
                 <div class="update-list">
-                    <div class="update-card">
-                        <h4>International Welcome Day</h4>
-                        <p>March 30 • Student Union</p>
-                    </div>
-
-                    <div class="update-card">
-                        <h4>Library Research Workshop</h4>
-                        <p>April 2 • Library Hall</p>
-                    </div>
-
-                    <div class="update-card">
-                        <h4>Scholarship Info Session</h4>
-                        <p>April 8 • Online</p>
+                    <div class="update-card" th:each="event : ${topEvents}">
+                        <h4 th:text="${event.title}">Event Title</h4>
+                        <p>
+                            <span th:text="${#temporals.format(event.eventDate, 'MMM d, yyyy')}">Date</span>
+                            <span th:if="${event.eventTime != null and !#strings.isEmpty(event.eventTime)}">
+                                • <span th:text="${event.eventTime}">Time</span>
+                            </span>
+                        </p>
+                        <p th:text="${event.location}">Location</p>
                     </div>
                 </div>
             </section>

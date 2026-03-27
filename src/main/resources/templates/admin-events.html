@@ -13,21 +13,45 @@
         <div th:replace="fragments/sidebar :: sidebar('admin-events')"></div>
 
         <main class="main-content">
-            <header class="topbar">
+            <header class="topbar topbar-row">
                 <div>
                     <h1>Manage Events</h1>
                     <p>Add and review event postings.</p>
                 </div>
+
+                <a href="/admin/events/new" class="action-btn">+ Add Event</a>
             </header>
 
             <section class="events-grid">
                 <div class="event-card" th:each="event : ${events}">
                     <h2 th:text="${event.title}">Event Title</h2>
+
                     <p class="meta">
-                        <span th:text="${event.date}">Date</span> •
+                        <span th:text="${#temporals.format(event.eventDate, 'MMM d, yyyy')}">Date</span>
+                        <span th:if="${event.eventTime != null and !#strings.isEmpty(event.eventTime)}">
+                            • <span th:text="${event.eventTime}">Time</span>
+                        </span>
+                        •
                         <span th:text="${event.location}">Location</span>
                     </p>
+
                     <p class="description" th:text="${event.description}">Description</p>
+
+                    <div class="event-actions">
+                        <a th:href="@{'/admin/events/edit/' + ${event.id}}" class="secondary-btn">
+                            Edit
+                        </a>
+
+                        <form th:if="${!event.builtIn}" 
+                            th:action="@{'/admin/events/delete/' + ${event.id}}" 
+                            method="post" 
+                            class="inline-form">
+
+                            <button type="submit" class="danger-btn">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </section>
         </main>

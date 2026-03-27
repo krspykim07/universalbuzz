@@ -12,25 +12,45 @@
             <h1>Add Event</h1>
             <p>Create a new campus event for students to view.</p>
 
-            <form th:action="@{/admin/events}" method="post" th:object="${event}">
+            <form th:action="${formMode == 'edit'} ? @{'/admin/events/update/' + ${event.id}} : @{/admin/events}" method="post" th:object="${event}">
                 <label>Title</label>
                 <input type="text" th:field="*{title}" placeholder="Enter event title" required>
 
                 <label>Date</label>
-                <input type="text" th:field="*{date}" placeholder="April 10, 2026" required>
+                <input type="date" th:field="*{eventDate}" required>
+
+                <label>Time</label>
+                <input type="text" th:field="*{eventTime}" placeholder="Noon, Afternoon, 3:00 PM - 5:00 PM, All Day">
 
                 <label>Location</label>
                 <input type="text" th:field="*{location}" placeholder="Student Union" required>
 
                 <label>Description</label>
-                <textarea th:field="*{description}" rows="5" placeholder="Write a short event description" required></textarea>
+                <textarea 
+                    th:field="*{description}" 
+                    rows="5" 
+                    maxlength="180"
+                    placeholder="Write a short event description (max 180 characters)"
+                    required>
+                </textarea>
+                <small id="charCount">0 / 180</small>
 
                 <div class="form-actions">
                     <a href="/admin/events" class="secondary-btn">Cancel</a>
-                    <button type="submit" class="primary-btn">Save Event</button>
+                    <button type="submit" class="primary-btn" th:text="${formMode == 'edit'} ? 'Update Event' : 'Save Event'">Save Event</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        const textarea = document.querySelector("textarea");
+        const counter = document.getElementById("charCount");
+
+        textarea.addEventListener("input", () => {
+            counter.textContent = textarea.value.length + " / 180";
+        });
+    </script>
+    
 </body>
 </html>
