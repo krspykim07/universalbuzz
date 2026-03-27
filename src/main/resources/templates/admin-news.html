@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin News | Universal Buzz</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/events.css}">
+    <link rel="stylesheet" th:href="@{/css/news.css}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<div class="dashboard-layout">
+    <div th:replace="fragments/sidebar :: sidebar('admin-news')"></div>
+
+    <main class="main-content">
+        <header class="topbar topbar-row">
+            <div>
+                <h1>Manage News</h1>
+                <p>Add, edit, and remove campus news posts.</p>
+            </div>
+            <a href="/admin/news/new" class="action-btn">+ Add News</a>
+        </header>
+
+        <section class="news-admin-list">
+            <div class="admin-news-card" th:each="news : ${newsList}">
+                <h2 th:text="${news.title}">News title</h2>
+                <p class="meta">
+                    <span th:text="${#temporals.format(news.publishDate, 'MMM d, yyyy')}">Date</span>
+                    <span th:if="${news.author != null and !#strings.isEmpty(news.author)}">
+                        • <span th:text="${news.author}">Author</span>
+                    </span>
+                </p>
+                <p class="summary" th:text="${news.summary}">Summary</p>
+
+                <div class="event-actions">
+                    <a th:href="@{'/admin/news/edit/' + ${news.id}}" class="secondary-btn">Edit</a>
+
+                    <form th:if="${!news.builtIn}" th:action="@{'/admin/news/delete/' + ${news.id}}" method="post" class="inline-form">
+                        <button type="submit" class="danger-btn">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/js/sidebar.js}"></script>
+</body>
+</html>

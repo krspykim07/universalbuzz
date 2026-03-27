@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Form | Universal Buzz</title>
+    <link rel="stylesheet" th:href="@{/css/events.css}">
+</head>
+<body>
+<div class="page form-page">
+    <div class="form-card">
+        <h1 th:text="${formMode == 'edit'} ? 'Edit News' : 'Add News'">Add News</h1>
+        <p>Create a campus news posting.</p>
+
+        <form th:action="${formMode == 'edit'} ? @{'/admin/news/update/' + ${news.id}} : @{/admin/news}" method="post" th:object="${news}">
+            <label>Title</label>
+            <input type="text" th:field="*{title}" placeholder="Enter news title" required>
+
+            <label>Publish Date</label>
+            <input type="date" th:field="*{publishDate}" required>
+
+            <label>Author</label>
+            <input type="text" th:field="*{author}" placeholder="Author name" required>
+
+            <label>Image URL</label>
+            <input type="url" th:field="*{imageUrl}" placeholder="https://example.com/news-image.jpg" required>
+
+            <label>Summary</label>
+            <textarea th:field="*{summary}" rows="4" maxlength="220" placeholder="Write a short summary (max 220 characters)" required></textarea>
+            <small id="summaryCount">0 / 220</small>
+
+            <label>Article Content</label>
+            <textarea th:field="*{content}" rows="8" placeholder="Paste the full story text" required></textarea>
+
+            <div class="form-actions">
+                <a href="/admin/news" class="secondary-btn">Cancel</a>
+                <button type="submit" class="primary-btn" th:text="${formMode == 'edit'} ? 'Update News' : 'Save News'">Save News</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const summary = document.querySelector("textarea[name='summary']");
+    const counter = document.getElementById("summaryCount");
+
+    if (summary && counter) {
+        const updateCounter = () => {
+            counter.textContent = summary.value.length + " / 220";
+        };
+
+        summary.addEventListener("input", updateCounter);
+        updateCounter();
+    }
+</script>
+
+</body>
+</html>
