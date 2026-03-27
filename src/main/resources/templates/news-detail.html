@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${news.title} + ' | Universal Buzz'">News Detail | Universal Buzz</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/events.css}">
+    <link rel="stylesheet" th:href="@{/css/news.css}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+<div class="dashboard-layout">
+    <div th:replace="fragments/sidebar :: sidebar('news')"></div>
+
+    <main class="main-content">
+        <a class="back-link" href="/news">← Back to News</a>
+
+        <section class="news-detail-layout">
+            <article class="news-article panel-like">
+                <h1 th:text="${news.title}">News article title</h1>
+                <p class="meta">
+                    <span th:text="${#temporals.format(news.publishDate, 'EEEE, MMM d, yyyy')}">Date</span>
+                    <span th:if="${news.author != null and !#strings.isEmpty(news.author)}">
+                        • By <span th:text="${news.author}">Author</span>
+                    </span>
+                </p>
+
+                <img class="hero-image" th:src="${news.imageUrl}" alt="News feature image">
+
+                <p class="lead" th:text="${news.summary}">Summary</p>
+
+                <p class="content" th:text="${news.content}">Article content goes here.</p>
+            </article>
+
+            <aside class="latest-news panel-like">
+                <h2>Latest Campus News</h2>
+
+                <a class="latest-item" th:each="item : ${latestNews}" th:if="${item.id != news.id}" th:href="@{'/news/' + ${item.id}}">
+                    <img th:src="${item.imageUrl}" alt="News thumbnail">
+                    <div>
+                        <h3 th:text="${item.title}">Title</h3>
+                        <p th:text="${#temporals.format(item.publishDate, 'MMM d, yyyy')}">Date</p>
+                    </div>
+                </a>
+            </aside>
+        </section>
+    </main>
+</div>
+
+<script th:src="@{/js/sidebar.js}"></script>
+</body>
+</html>

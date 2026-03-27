@@ -53,6 +53,26 @@
                     </div>
                 </div>
             </section>
+
+            <section class="recent-section">
+                <div class="section-header">
+                    <h2>Latest News</h2>
+                    <a href="/news" class="view-all-btn">View All News</a>
+                </div>
+
+                <div class="update-list">
+                    <div class="update-card" th:each="news : ${topNews}">
+                        <h4 th:text="${news.title}">News Title</h4>
+                        <p>
+                            <span th:text="${#temporals.format(news.publishDate, 'MMM d, yyyy')}">Date</span>
+                            <span th:if="${news.author != null and !#strings.isEmpty(news.author)}">
+                                • <span th:text="${news.author}">Author</span>
+                            </span>
+                        </p>
+                        <p th:text="${news.summary}">Summary</p>
+                    </div>
+                </div>
+            </section>
         </main>
     </div>
 
