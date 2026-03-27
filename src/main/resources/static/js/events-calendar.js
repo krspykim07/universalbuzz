@@ -51,7 +51,7 @@
 
     function renderHighlights(monthEvents) {
         highlightsGrid.innerHTML = '';
-        const visibleEvents = expandedHighlights ? monthEvents : monthEvents.slice(0, 6);
+        const visibleEvents = expandedHighlights ? monthEvents : monthEvents.slice(0, 3);
 
         if (monthEvents.length === 0) {
             highlightsEmpty.hidden = false;
@@ -80,10 +80,10 @@
             highlightsGrid.appendChild(card);
         });
 
-        if (monthEvents.length > 6) {
+        if (monthEvents.length > 3) {
             toggleHighlightsBtn.hidden = false;
             toggleHighlightsBtn.textContent = expandedHighlights
-                ? 'Show top 6'
+                ? 'Show top 3'
                 : `Show all ${monthEvents.length}`;
         } else {
             toggleHighlightsBtn.hidden = true;
