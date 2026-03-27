@@ -12,7 +12,6 @@
     const now = new Date();
     let selectedYear = now.getFullYear();
     let selectedMonth = now.getMonth();
-    let expandedHighlights = false;
 
     if (events.length > 0) {
         selectedYear = events[0].parsedDate.getFullYear();
@@ -33,7 +32,6 @@
     const monthLabel = document.getElementById('month-label');
     const highlightsGrid = document.getElementById('highlights-grid');
     const highlightsEmpty = document.getElementById('highlights-empty');
-    const toggleHighlightsBtn = document.getElementById('toggle-highlights');
     const calendarGrid = document.getElementById('calendar-grid');
     const monthEventsList = document.getElementById('month-events-list');
     const monthListEmpty = document.getElementById('month-list-empty');
@@ -51,17 +49,15 @@
 
     function renderHighlights(monthEvents) {
         highlightsGrid.innerHTML = '';
-        const visibleEvents = expandedHighlights ? monthEvents : monthEvents.slice(0, 3);
 
         if (monthEvents.length === 0) {
             highlightsEmpty.hidden = false;
-            toggleHighlightsBtn.hidden = true;
             return;
         }
 
         highlightsEmpty.hidden = true;
 
-        visibleEvents.forEach((event) => {
+        monthEvents.forEach((event) => {
             const card = document.createElement('article');
             card.className = 'event-card';
 
@@ -80,14 +76,6 @@
             highlightsGrid.appendChild(card);
         });
 
-        if (monthEvents.length > 3) {
-            toggleHighlightsBtn.hidden = false;
-            toggleHighlightsBtn.textContent = expandedHighlights
-                ? 'Show top 3'
-                : `Show all ${monthEvents.length}`;
-        } else {
-            toggleHighlightsBtn.hidden = true;
-        }
     }
 
     function renderCalendar(monthEvents) {
@@ -173,7 +161,6 @@
             selectedMonth = 11;
             selectedYear -= 1;
         }
-        expandedHighlights = false;
         render();
     });
 
@@ -183,13 +170,7 @@
             selectedMonth = 0;
             selectedYear += 1;
         }
-        expandedHighlights = false;
         render();
-    });
-
-    toggleHighlightsBtn.addEventListener('click', () => {
-        expandedHighlights = !expandedHighlights;
-        renderHighlights(currentMonthEvents());
     });
 
     render();
