@@ -95,6 +95,13 @@ body {
     margin-top: 20px;
 }
 
+.admin-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+}
+
 .nav-links a,
 .logout-btn {
     display: flex;
