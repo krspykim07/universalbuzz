@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <div th:fragment="sidebar(activePage)">
         <aside class="sidebar" id="sidebar">
@@ -21,18 +21,9 @@
                     <span class="nav-text">Events</span>
                 </a>
 
-                <a th:href="@{/admin/events}">
-                    <i data-lucide="settings"></i>
-                    <span class="nav-text">Manage Events</span>
-                </a>
                 <a th:href="@{/news}">
                     <i data-lucide="newspaper"></i>
                     <span class="nav-text">News</span>
-                </a>
-
-                <a th:href="@{/admin/news}">
-                    <i data-lucide="newspaper"></i>
-                    <span class="nav-text">Manage News</span>
                 </a>
 
                 <a href="#">
@@ -45,7 +36,16 @@
                     <span class="nav-text">Profile</span>
                 </a>
 
-                
+                <div class="admin-nav-group" sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/admin/events}">
+                        <i data-lucide="settings"></i>
+                        <span class="nav-text">Manage Events</span>
+                    </a>
+                    <a th:href="@{/admin/news}">
+                        <i data-lucide="newspaper"></i>
+                        <span class="nav-text">Manage News</span>
+                    </a>
+                </div>
             </nav>
 
             <form th:action="@{/logout}" method="post" class="logout-form">
