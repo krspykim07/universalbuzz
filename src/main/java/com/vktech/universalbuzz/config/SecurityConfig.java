@@ -1,30 +1,27 @@
 package com.vktech.universalbuzz.config;
 
+import com.vktech.universalbuzz.repository.AppUserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        return new InMemoryUserDetailsManager(
-            User.withUsername("admin")
-                .password(passwordEncoder.encode("admin123"))
-                .roles("ADMIN")
-                .build(),
-            User.withUsername("user")
-                .password(passwordEncoder.encode("user"))
-                .roles("USER")
-                .build()
-        );
+    public UserDetailsService userDetailsService(AppUserRepository appUserRepository) {
+        return username -> appUserRepository.findByUsername(username)
+            .map(appUser -> User.withUsername(appUser.getUsername())
+                .password(appUser.getPassword())
+                .authorities(appUser.getRole())
+                .build())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     @Bean

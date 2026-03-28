@@ -1,11 +1,18 @@
 package com.vktech.universalbuzz.controller;
 
+import com.vktech.universalbuzz.service.AppUserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
+
+    private final AppUserService appUserService;
+
+    public AuthController(AppUserService appUserService) {
+        this.appUserService = appUserService;
+    }
 
     @PostMapping("/signup")
     public String signup(String fullName,
@@ -14,8 +21,13 @@ public class AuthController {
                          String password,
                          RedirectAttributes redirectAttributes) {
 
-        redirectAttributes.addFlashAttribute("signupSuccess",
-                "Signup UI works! Next step is saving users to the database.");
+        try {
+            appUserService.registerUser(fullName, username, email, password);
+            redirectAttributes.addFlashAttribute("signupSuccess",
+                "Account created successfully. You can now log in.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("signupError", ex.getMessage());
+        }
 
         return "redirect:/#authSection";
     }
