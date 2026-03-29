@@ -333,6 +333,12 @@ body {
     color: #9ca3af;
 }
 
+/* Disable animations when needed */
+.no-animation * {
+    transition: none !important;
+    animation: none !important;
+}
+
 .btn {
     border: none;
     border-radius: 999px;
