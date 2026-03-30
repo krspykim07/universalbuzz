@@ -1,35 +1,64 @@
 package com.vktech.universalbuzz.model;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "events")
 public class Event {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
-    private LocalDate eventDate;
-    private String eventTime;
-    private String location;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
-    private boolean builtIn;
+
+    @Column(nullable = false)
+    private String location;
+
+    @Column(nullable = false)
+    private String organizerName;
+
+    @Column(nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(nullable = false)
+    private LocalDateTime endTime;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EventStatus status = EventStatus.DRAFT;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id", nullable = false)
+    private User createdBy;
 
     public Event() {
     }
 
-    public Event(Long id, String title, LocalDate eventDate, String eventTime, String location, String description, boolean builtIn) {
-        this.id = id;
-        this.title = title;
-        this.eventDate = eventDate;
-        this.eventTime = eventTime;
-        this.location = location;
-        this.description = description;
-        this.builtIn = builtIn;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -40,20 +69,12 @@ public class Event {
         this.title = title;
     }
 
-    public LocalDate getEventDate() {
-        return eventDate;
+    public String getDescription() {
+        return description;
     }
 
-    public void setEventDate(LocalDate eventDate) {
-        this.eventDate = eventDate;
-    }
-
-    public String getEventTime() {
-        return eventTime;
-    }
-
-    public void setEventTime(String eventTime) {
-        this.eventTime = eventTime;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getLocation() {
@@ -64,19 +85,51 @@ public class Event {
         this.location = location;
     }
 
-    public String getDescription() {
-        return description;
+    public String getOrganizerName() {
+        return organizerName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
     }
 
-    public boolean isBuiltIn() {
-        return builtIn;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setBuiltIn(boolean builtIn) {
-        this.builtIn = builtIn;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public EventStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(EventStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
     }
 }
