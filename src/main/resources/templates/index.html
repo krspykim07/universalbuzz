@@ -69,13 +69,30 @@
                         <p class="subtitle">Join the Sacramento State international student community</p>
 
                         <div th:if="${param.signupSuccess}" class="message success">
-                            Signup UI works! Next step is saving users to the database.
+                            Account created successfully. Please log in.
+                        </div>
+
+                        <div th:if="${param.signupError != null and param.signupError[0] == 'usernameExists'}" class="message error">
+                            Username already exists.
+                        </div>
+
+                        <div th:if="${param.signupError != null and param.signupError[0] == 'emailExists'}" class="message error">
+                            Email already exists.
+                        </div>
+
+                        <div th:if="${param.signupError != null and param.signupError[0] == 'passwordTooShort'}" class="message error">
+                            Password must be at least 8 characters long.
+                        </div>
+
+                        <div th:if="${param.signupError != null and param.signupError[0] == 'passwordMismatch'}" class="message error">
+                            Passwords do not match.
                         </div>
 
                         <input type="text" name="fullName" placeholder="Full Name" required>
                         <input type="text" name="username" placeholder="Username" required>
                         <input type="email" name="email" placeholder="Email" required>
-                        <input type="password" name="password" placeholder="Password" required>
+                        <input type="password" name="password" placeholder="Password" minlength="8" required>
+                        <input type="password" name="confirmPassword" placeholder="Confirm Password" minlength="8" required>
 
                         <button type="submit" class="btn primary-btn">Sign Up</button>
                     </form>
@@ -111,8 +128,8 @@
     </div>
 
     <form id="demoLoginForm" th:action="@{/login}" method="post" style="display:none;">
-        <input type="hidden" name="username" value="user">
-        <input type="hidden" name="password" value="user">
+        <input type="hidden" name="username" value="demo">
+        <input type="hidden" name="password" value="password123">
     </form>
 
 
@@ -334,6 +351,38 @@
                 demoLoginForm.submit();
             });
         }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const pageShell = document.getElementById("pageShell");
+            const authContainer = document.getElementById("authContainer");
+            const params = new URLSearchParams(window.location.search);
+
+            const hasSignupError =
+                params.get("signupError") === "usernameExists" ||
+                params.get("signupError") === "emailExists" ||
+                params.get("signupError") === "passwordTooShort" ||
+                params.get("signupError") === "passwordMismatch";
+
+            const hasSignupSuccess = params.has("signupSuccess");
+            const hasLoginState = params.has("error") || params.has("logout");
+
+            if (hasSignupError || hasSignupSuccess || hasLoginState) {
+                document.body.classList.add("no-animation");
+                pageShell.classList.add("show-auth");
+
+                if (hasSignupError) {
+                    authContainer.classList.add("right-panel-active"); // stay on signup
+                } else {
+                    authContainer.classList.remove("right-panel-active"); // go to login
+                }
+
+                setTimeout(() => {
+                    document.body.classList.remove("no-animation");
+                }, 50);
+            }
+        });
     </script>
 
 </body>
