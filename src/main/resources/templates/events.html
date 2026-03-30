@@ -17,20 +17,40 @@
             <header class="topbar">
                 <div>
                     <h1>Campus Events</h1>
-                    <p>Browse monthly events with a calendar and a date-ordered list.</p>
+                    <p>Browse upcoming events, explore the calendar, and view events by date.</p>
                 </div>
             </header>
+
+            <section class="panel" aria-labelledby="saved-events-title">
+                <div class="panel-header">
+                    <div>
+                        <h2 id="saved-events-title">Saved / RSVP Events</h2>
+                        <p>Your saved and RSVP'd events will appear here.</p>
+                    </div>
+                </div>
+
+                <div id="saved-events-grid" class="events-grid"></div>
+                <p id="saved-events-empty" class="empty-state">No saved or RSVP'd events yet.</p>
+            </section>
 
             <section class="panel highlights-panel" aria-labelledby="highlights-title">
                 <div class="panel-header">
                     <div>
-                        <h2 id="highlights-title">Top events this month</h2>
-                        <p id="month-label">Loading month…</p>
+                        <h2 id="highlights-title">Upcoming Events</h2>
+                        <p>Browse upcoming events across campus.</p>
+                    </div>
+
+                    <div class="carousel-controls">
+                        <button id="highlights-prev" class="icon-btn" type="button" aria-label="Scroll left">←</button>
+                        <button id="highlights-next" class="icon-btn" type="button" aria-label="Scroll right">→</button>
                     </div>
                 </div>
 
-                <div id="highlights-grid" class="events-grid events-carousel"></div>
-                <p id="highlights-empty" class="empty-state" hidden>No events in this month yet.</p>
+                <div class="events-carousel-wrapper">
+                    <div id="highlights-grid" class="events-grid events-carousel"></div>
+                </div>
+
+                <p id="highlights-empty" class="empty-state" hidden>No upcoming events available right now.</p>
             </section>
 
             <section class="calendar-layout">
@@ -42,6 +62,7 @@
                             <button id="next-month" class="icon-btn" type="button" aria-label="Next month">→</button>
                         </div>
                     </div>
+                    <div id="calendar-month-label" class="calendar-month-label"></div>
                     <div id="calendar-grid" class="calendar-grid"></div>
                 </div>
 
@@ -54,9 +75,30 @@
         </main>
     </div>
 
+    <div id="event-modal" class="event-modal hidden">
+        <div class="event-modal-content">
+            <button id="close-modal" class="close-btn" type="button">×</button>
+
+            <img id="modal-image" class="event-image" src="/images/default-event.jpg" alt="Event image">
+
+            <h2 id="modal-title"></h2>
+
+            <p id="modal-date" class="modal-meta"></p>
+            <p id="modal-location" class="modal-meta"></p>
+            <p id="modal-organizer" class="modal-meta"></p>
+
+            <p id="modal-description" class="modal-description"></p>
+
+            <div class="modal-actions">
+                <button class="primary-btn" type="button">RSVP</button>
+                <button class="secondary-btn" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/sidebar.js}"></script>
     <script th:inline="javascript">
-        window.allEvents = /*[[${events}]]*/ [];
+        window.allEvents = JSON.parse(/*[[${eventsJson}]]*/ '[]');
     </script>
     <script th:src="@{/js/events-calendar.js}"></script>
 </body>

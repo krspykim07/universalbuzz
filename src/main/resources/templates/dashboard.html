@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal Buzz Dashboard</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/events.css}">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -37,21 +38,18 @@
             <section class="recent-section">
                 <div class="section-header">
                     <h2>Upcoming Events</h2>
-                    <a href="/events" class="view-all-btn">View All Events</a>
-                </div>
-
-                <div class="update-list">
-                    <div class="update-card" th:each="event : ${topEvents}">
-                        <h4 th:text="${event.title}">Event Title</h4>
-                        <p>
-                            <span th:text="${#temporals.format(event.eventDate, 'MMM d, yyyy')}">Date</span>
-                            <span th:if="${event.eventTime != null and !#strings.isEmpty(event.eventTime)}">
-                                • <span th:text="${event.eventTime}">Time</span>
-                            </span>
-                        </p>
-                        <p th:text="${event.location}">Location</p>
+                    <div class="carousel-controls">
+                        <button id="dashboard-events-prev" class="icon-btn" type="button" aria-label="Scroll left">←</button>
+                        <button id="dashboard-events-next" class="icon-btn" type="button" aria-label="Scroll right">→</button>
+                        <a href="/events" class="view-all-btn">View All Events</a>
                     </div>
                 </div>
+
+                <div class="events-carousel-wrapper">
+                    <div id="dashboard-events-grid" class="events-grid events-carousel"></div>
+                </div>
+
+                <p id="dashboard-events-empty" class="empty-state" hidden>No upcoming events available right now.</p>
             </section>
 
             <section class="recent-section">
@@ -76,7 +74,31 @@
         </main>
     </div>
 
+    <div id="dashboard-event-modal" class="event-modal hidden">
+        <div class="event-modal-content">
+            <button id="dashboard-close-modal" class="close-btn" type="button">×</button>
+
+            <img id="dashboard-modal-image" class="event-image" src="/images/events/campus-event-default.png" alt="Event image">
+
+            <h2 id="dashboard-modal-title"></h2>
+
+            <p id="dashboard-modal-date" class="modal-meta"></p>
+            <p id="dashboard-modal-location" class="modal-meta"></p>
+            <p id="dashboard-modal-organizer" class="modal-meta"></p>
+
+            <p id="dashboard-modal-description" class="modal-description"></p>
+
+            <div class="modal-actions">
+                <button class="primary-btn" type="button">RSVP</button>
+                <button class="secondary-btn" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/sidebar.js}"></script>
-    
+    <script th:inline="javascript">
+        window.dashboardEvents = JSON.parse(/*[[${topEventsJson}]]*/ '[]');
+    </script>
+    <script th:src="@{/js/dashboard-events.js}"></script>
 </body>
 </html>

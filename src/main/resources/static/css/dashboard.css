@@ -254,6 +254,66 @@ body {
     transform: translateY(-1px);
 }
 
+/* ----------------------------- Events ----------------------------- */
+.events-carousel {
+    display: grid;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - 32px) / 3);
+    gap: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.events-carousel .event-card {
+    scroll-snap-align: start;
+    min-width: 0;
+}
+
+.carousel-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.events-carousel {
+    scrollbar-width: none; /* Firefox */
+}
+
+.events-carousel::-webkit-scrollbar {
+    height: 8px;
+    opacity: 0;
+}
+
+.events-carousel::-webkit-scrollbar-thumb {
+    background: rgba(23, 61, 45, 0.25);
+    border-radius: 999px;
+}
+
+.events-carousel:not(:hover)::-webkit-scrollbar {
+    height: 0;
+}
+
+.events-carousel:hover {
+    scrollbar-width: thin; /* Firefox */
+}
+
+@media (max-width: 1100px) {
+    .events-carousel {
+        grid-auto-columns: calc((100% - 16px) / 2);
+    }
+}
+
+@media (max-width: 900px) {
+    .events-carousel {
+        grid-auto-columns: 100%;
+    }
+}
+
 @media (max-width: 1000px) {
     .cards,
     .update-list,
