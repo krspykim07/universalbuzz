@@ -17,6 +17,9 @@ public class Event {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column
+    private String imageUrl;
+
     @Column(nullable = false)
     private String location;
 
@@ -75,6 +78,14 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getLocation() {

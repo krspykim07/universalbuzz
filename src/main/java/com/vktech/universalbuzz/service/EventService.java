@@ -1,105 +1,107 @@
 package com.vktech.universalbuzz.service;
 
 import com.vktech.universalbuzz.model.Event;
+import com.vktech.universalbuzz.model.EventStatus;
+import com.vktech.universalbuzz.model.User;
+import com.vktech.universalbuzz.repository.EventRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class EventService {
 
-    private final List<Event> events = new ArrayList<>();
-    private final AtomicLong counter = new AtomicLong(1);
+    private final EventRepository eventRepository;
 
-    public EventService() {
-        events.add(new Event(
-                counter.getAndIncrement(),
-                "International Welcome Day",
-                LocalDate.of(2026, 3, 30),
-                "10:00 AM",
-                "Student Union",
-                "Meet fellow international students and learn about campus resources.",
-                true
-        ));
-
-        events.add(new Event(
-                counter.getAndIncrement(),
-                "Career Workshop",
-                LocalDate.of(2026, 4, 5),
-                "2:00 PM",
-                "Library Hall",
-                "A workshop focused on resumes, internships, and career readiness.",
-                true
-        ));
+    public EventService(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
     }
 
-    public List<Event> getAllEvents() {
-        return events.stream()
-                .sorted(Comparator.comparing(Event::getEventDate))
-                .toList();
-    }
-
-    public List<Event> getUpcomingEvents() {
-        LocalDate today = LocalDate.now();
-
-        return events.stream()
-                .filter(event -> !event.getEventDate().isBefore(today))
-                .sorted(Comparator.comparing(Event::getEventDate))
-                .toList();
+    public List<Event> getPublishedEvents() {
+        return eventRepository.findByStatusAndStartTimeGreaterThanEqualOrderByStartTimeAsc(
+                EventStatus.PUBLISHED,
+                LocalDateTime.now()
+        );
     }
 
     public List<Event> getTopUpcomingEvents(int limit) {
-        LocalDate today = LocalDate.now();
-
-        return events.stream()
-                .filter(event -> !event.getEventDate().isBefore(today))
-                .sorted(Comparator.comparing(Event::getEventDate))
+        return getPublishedEvents().stream()
                 .limit(limit)
                 .toList();
     }
 
-    public void addEvent(Event event) {
-        event.setId(counter.getAndIncrement());
-        event.setBuiltIn(false);
-
-        if (event.getDescription() != null && event.getDescription().length() > 180) {
-            event.setDescription(event.getDescription().substring(0, 180));
-        }
-
-        events.add(event);
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
     }
 
     public Event getEventById(Long id) {
-        return events.stream()
-                .filter(event -> event.getId().equals(id))
-                .findFirst()
-                .orElse(null);
+        return eventRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found: " + id));
     }
 
-    public void updateEvent(Long id, Event updatedEvent) {
-        Event existing = getEventById(id);
-        if (existing != null) {
-            existing.setTitle(updatedEvent.getTitle());
-            existing.setEventDate(updatedEvent.getEventDate());
-            existing.setEventTime(updatedEvent.getEventTime());
-            existing.setLocation(updatedEvent.getLocation());
+    public Event createEvent(Event event, User createdBy) {
+        event.setCreatedBy(createdBy);
+        return eventRepository.save(event);
+    }
 
-            String description = updatedEvent.getDescription();
-            if (description != null && description.length() > 180) {
-                description = description.substring(0, 180);
-            }
-            existing.setDescription(description);
+    public Event updateEvent(Long id, Event updatedEvent) {
+        Event existing = getEventById(id);
+
+        if (updatedEvent.getTitle() != null && !updatedEvent.getTitle().isBlank()) {
+            existing.setTitle(updatedEvent.getTitle());
         }
+
+        if (updatedEvent.getDescription() != null && !updatedEvent.getDescription().isBlank()) {
+            existing.setDescription(updatedEvent.getDescription());
+        }
+
+        if (updatedEvent.getImageUrl() != null && !updatedEvent.getImageUrl().isBlank()) {
+            existing.setImageUrl(updatedEvent.getImageUrl());
+        }
+
+        if (updatedEvent.getLocation() != null && !updatedEvent.getLocation().isBlank()) {
+            existing.setLocation(updatedEvent.getLocation());
+        }
+
+        if (updatedEvent.getOrganizerName() != null && !updatedEvent.getOrganizerName().isBlank()) {
+            existing.setOrganizerName(updatedEvent.getOrganizerName());
+        }
+
+        if (updatedEvent.getStartTime() != null) {
+            existing.setStartTime(updatedEvent.getStartTime());
+        }
+
+        if (updatedEvent.getEndTime() != null) {
+            existing.setEndTime(updatedEvent.getEndTime());
+        }
+
+        if (updatedEvent.getStatus() != null) {
+            existing.setStatus(updatedEvent.getStatus());
+        }
+
+        return eventRepository.save(existing);
+    }
+
+    public Event publishEvent(Long id) {
+        Event event = getEventById(id);
+        event.setStatus(EventStatus.PUBLISHED);
+        return eventRepository.save(event);
+    }
+
+    public Event unpublishEvent(Long id) {
+        Event event = getEventById(id);
+        event.setStatus(EventStatus.DRAFT);
+        return eventRepository.save(event);
+    }
+
+    public Event saveDraft(Event event, User createdBy) {
+        event.setStatus(EventStatus.DRAFT);
+        event.setCreatedBy(createdBy);
+        return eventRepository.save(event);
     }
 
     public void deleteEvent(Long id) {
-        Event event = getEventById(id);
-        if (event != null && !event.isBuiltIn()) {
-            events.remove(event);
-        }
+        eventRepository.deleteById(id);
     }
 }
